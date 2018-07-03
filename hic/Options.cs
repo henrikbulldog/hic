@@ -16,7 +16,7 @@ namespace hic
 
         public bool Validate()
         {
-            return ServerName != null && UserName != null && Password != null && Tags != null && Start != DateTime.MinValue && End != DateTime.MinValue;
+            return ServerName != null && Tags != null && Start != DateTime.MinValue && End != DateTime.MinValue;
         }
     }
 }

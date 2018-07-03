@@ -75,7 +75,7 @@ namespace hic
                 parms.Criteria.SamplingMode = DataCriteria.SamplingModeType.Calculated;
                 parms.Criteria.CalculationMode = DataCriteria.CalculationModeType.Average;
                 parms.Criteria.BackwardTimeOrder = false;
-                parms.Criteria.IntervalMicroseconds = 3600000;
+                parms.Criteria.IntervalMicroseconds = 60000;
                 parms.Criteria.NumberOfSamples = 0;
                 parms.Criteria.Start = options.Start;
                 parms.Criteria.End = options.End;
@@ -92,7 +92,7 @@ namespace hic
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Proficy.Historian.Module.QueryModule - Error while querying: " + ex.Message);
+                Console.WriteLine($"Proficy.Historian.Module.QueryModule - Error while querying: {ex}");
             }
             return null;
         }
