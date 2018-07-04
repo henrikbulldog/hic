@@ -10,6 +10,9 @@ The version of the client SDK assembly must match that of the GE Historian serve
 ## /src
 This folder contains the C# hic.exe source files.
 
+## /exe
+This folder contains hic executables for different versions of the GE Proficy Historian.
+
 # Building the Module
 To build the module, open up the solution in Visual Studio and run the build command. 
 
