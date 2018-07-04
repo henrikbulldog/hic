@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Proficy.Historian.ClientAccess.API;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -9,7 +8,6 @@ namespace hic
 {
     class Program
     {
-
         static void Main(string[] args)
         {
             var builder = new ConfigurationBuilder();
@@ -78,7 +76,7 @@ namespace hic
         {
             if (str != null)
                 return str.Split(',');
-            return null;
+            return new string[] { };
         }
 
         private static void Help()
