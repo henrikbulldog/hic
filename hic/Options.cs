@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Proficy.Historian.ClientAccess.API;
+using System;
 
 namespace hic
 {
@@ -9,20 +8,29 @@ namespace hic
         public string ServerName = null;
         public string UserName = null;
         public string Password = null;
-        public bool PrintToConsole = false;
-        public string[] Tags = null;
-        public DateTime Start = DateTime.MinValue;
-        public DateTime End = DateTime.MinValue;
         public string Out = null;
+        public DataCriteria Criteria;
+
+        public Options(object[] tagnames)
+        {
+            Criteria = new DataCriteria(tagnames);
+            Criteria.IntervalMicroseconds = 60000000;
+            Criteria.Start = DateTime.MinValue;
+            Criteria.End = DateTime.MinValue;
+        }
 
         public bool Validate()
         {
-            return ServerName != null 
+            return ServerName != null
                 && UserName != null
                 && Password != null
-                && Tags != null 
-                && Start != DateTime.MinValue 
-                && End != DateTime.MinValue;
+                && Criteria.Tagnames != null
+                && Criteria.Start != DateTime.MinValue
+                && Criteria.End != DateTime.MinValue
+                && Criteria.SamplingMode != DataCriteria.SamplingModeType.Undefined
+                && Criteria.CalculationMode != DataCriteria.CalculationModeType.Undefined
+                && Criteria.IntervalMicroseconds != 0;
+            ;
         }
     }
 }

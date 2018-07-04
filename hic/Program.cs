@@ -12,20 +12,21 @@ namespace hic
 
         static void Main(string[] args)
         {
-            var options = new Options();
             var builder = new ConfigurationBuilder();
             builder.AddCommandLine(args);
             var config = builder.Build();
-            Console.WriteLine(string.Join(", ", config.AsEnumerable().Select(e => $"{e.Key}: {e.Value}")));
-            options.ServerName = GetArg(config.AsEnumerable(), "server");
-            options.UserName = GetArg(config.AsEnumerable(), "user");
-            options.Password = GetArg(config.AsEnumerable(), "psw");
-            options.Tags = Str2Array(GetArg(config.AsEnumerable(), "tags"));
-            DateTime.TryParse(GetArg(config.AsEnumerable(), "start"), out options.Start);
-            DateTime.TryParse(GetArg(config.AsEnumerable(), "end"), out options.End);
-            options.Out = GetArg(config.AsEnumerable(), "out");
+            var options = new Options(Str2Array(GetArg(config, "tags")));
+            options.ServerName = GetArg(config, "server");
+            options.UserName = GetArg(config, "user");
+            options.Password = GetArg(config, "psw");
+            DateTime.TryParse(GetArg(config, "start"), out options.Criteria.Start);
+            DateTime.TryParse(GetArg(config, "end"), out options.Criteria.End);
+            Enum.TryParse<DataCriteria.SamplingModeType>(GetArg(config, "samplingMode"), out options.Criteria.SamplingMode);
+            Enum.TryParse<DataCriteria.CalculationModeType>(GetArg(config, "calculationMode"), out options.Criteria.CalculationMode);
+            long.TryParse(GetArg(config, "intervalMicroseconds"), out options.Criteria.IntervalMicroseconds);
+            uint.TryParse(GetArg(config, "numberOfSamples"), out options.Criteria.NumberOfSamples);
+            options.Out = GetArg(config, "out");
 
-            options.PrintToConsole = true;
             if (!options.Validate())
             {
                 Help();
@@ -82,12 +83,24 @@ namespace hic
 
         private static void Help()
         {
-            Console.WriteLine("Usage: hic --server <server dns or ip> --user <user name> --psw <password> --tags <tag names> --start <start time> --out <end time> [--out <output csv file>]");
+            Console.WriteLine("Usage: hic <options>");
+            Console.WriteLine("Options:");
+            Console.WriteLine("\t--server <server dns or ip>");
+            Console.WriteLine("\t--user <user name>");
+            Console.WriteLine("\t--psw <password>");
+            Console.WriteLine("\t--tags <tag names>");
+            Console.WriteLine("\t--start <start time>");
+            Console.WriteLine("\t--end <end time>");
+            Console.WriteLine("\t--samplingMode <CurrentValue | Interpolated | Trend | RawByTime | RawByNumber | Calculated | Lab | InterpolatedToRaw | TrendToRaw | LabToRaw | RawByFilterToggling | Trend2 | TrendToRaw2>");
+            Console.WriteLine("\t--calculationMode <Average | StandardDeviation | Total | Minimum | Maximum | Count | RawAverage | RawStandardDeviation | RawTotal | MinimumTime | MaximumTime | TimeGood | StateCount | StateTime | OPCAnd | OPCOr | FirstRawValue | FirstRawTime | LastRawValue | LastRawTime | TagStats>");
+            Console.WriteLine("\t--intervalMicroseconds <sample interval in 1/1000000 seconds>");
+            Console.WriteLine("\t[--numberOfSamples <number of samples>]");
+            Console.WriteLine("\t[--out <output csv file>]");
         }
 
-        private static string GetArg(IEnumerable<KeyValuePair<string, string>> args, string key)
+        private static string GetArg(IConfigurationRoot config, string key)
         {
-            return args.FirstOrDefault(a => a.Key == key).Value;
+            return config.AsEnumerable().FirstOrDefault(a => a.Key == key).Value;
         }
 
         public static DataSet Query(Options options)
@@ -98,15 +111,10 @@ namespace hic
                 // Define connection and establish it
                 _historian = new ServerConnection(new ConnectionProperties { ServerHostName = options.ServerName, Username = options.UserName, Password = options.Password, ServerCertificateValidationMode = CertificateValidationMode.None });
                 _historian.Connect();
-                var parms = new DataQueryParams(options.Tags);
-                Console.WriteLine($"TagNames: {string.Join(", ", parms.Criteria.Tagnames)}");
-                parms.Criteria.SamplingMode = DataCriteria.SamplingModeType.Calculated;
-                parms.Criteria.CalculationMode = DataCriteria.CalculationModeType.Average;
-                parms.Criteria.BackwardTimeOrder = false;
-                parms.Criteria.IntervalMicroseconds = 60000000;
-                parms.Criteria.NumberOfSamples = 0;
-                parms.Criteria.Start = options.Start;
-                parms.Criteria.End = options.End;
+                var parms = new DataQueryParams()
+                {
+                    Criteria = options.Criteria
+                };
                 DataSet ds;
                 ItemErrors errors;
 
