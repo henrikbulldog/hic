@@ -1,4 +1,4 @@
-﻿using Proficy.Historian.ClientAccess.API;
+using Proficy.Historian.ClientAccess.API;
 using System;
 
 namespace hic
@@ -10,6 +10,7 @@ namespace hic
         public string Password = null;
         public string Out = null;
         public DataCriteria Criteria;
+        public long MaxMessageSize;
 
         public Options(object[] tagnames)
         {

@@ -1,8 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Proficy.Historian.ClientAccess.API;
 using System;
 using System.IO;
 using System.Linq;
+using System.Net;
 
 namespace hic
 {
@@ -24,6 +25,7 @@ namespace hic
             long.TryParse(GetArg(config, "intervalMicroseconds"), out options.Criteria.IntervalMicroseconds);
             uint.TryParse(GetArg(config, "numberOfSamples"), out options.Criteria.NumberOfSamples);
             options.Out = GetArg(config, "out");
+            long.TryParse(GetArg(config, "size"), out options.MaxMessageSize);            
 
             if (!options.Validate())
             {
@@ -32,8 +34,9 @@ namespace hic
             else
             {
                 var ds = Query(options);
-                PrintDataSet(ds);
+                
                 SaveDataSetToFile(ds, options.Out);
+                PrintDataSet(ds);
             }
         }
 
@@ -61,6 +64,7 @@ namespace hic
             if (ds != null)
             {
                 Console.WriteLine($"TotalSamples: { ds.TotalSamples }");
+
                 foreach (var r in ds)
                 {
                     Console.WriteLine($"Tag: {r.Key}");
@@ -94,6 +98,7 @@ namespace hic
             Console.WriteLine("\t--intervalMicroseconds <sample interval in 1/1000000 seconds>");
             Console.WriteLine("\t[--numberOfSamples <number of samples>]");
             Console.WriteLine("\t[--out <output csv file>]");
+            Console.WriteLine("\t[--size <MaxMessageSize>]");
         }
 
         private static string GetArg(IConfigurationRoot config, string key)
@@ -106,8 +111,26 @@ namespace hic
             ServerConnection _historian;
             try
             {
+                var xx = new ConnectionProperties
+                {
+                    ServerHostName = options.ServerName,
+                    Username = options.UserName,
+                    Password = options.Password,
+                    ServerCertificateValidationMode = CertificateValidationMode.None
+                    
+                };
+
                 // Define connection and establish it
-                _historian = new ServerConnection(new ConnectionProperties { ServerHostName = options.ServerName, Username = options.UserName, Password = options.Password, ServerCertificateValidationMode = CertificateValidationMode.None });
+                _historian = new ServerConnection(
+                    new ConnectionProperties
+                    {
+                        ServerHostName = options.ServerName,
+                        Username = options.UserName,
+                        Password = options.Password,
+                        ServerCertificateValidationMode = CertificateValidationMode.None,
+                        MaxReceivedMessageSize = Math.Max(1048576, options.MaxMessageSize)
+                    });
+
                 _historian.Connect();
                 var parms = new DataQueryParams()
                 {
@@ -127,6 +150,7 @@ namespace hic
             catch (Exception ex)
             {
                 Console.WriteLine($"Proficy.Historian.Module.QueryModule - Error while querying: {ex}");
+                Environment.Exit(10);
             }
             return null;
         }
