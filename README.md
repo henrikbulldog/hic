@@ -19,9 +19,9 @@ To build the module, open up the solution in Visual Studio and run the build com
 # Running the module
 Usage: hic <options>
 Options:
-        --server <server dns or ip>
-        --user <user name>
-        --psw <password>
+        --server <server dns or environment variable>
+        --user <user name or environment variable>
+        --psw <password or environment variable>
         --tags <tag names>
         --start <start time>
         --end <end time>
