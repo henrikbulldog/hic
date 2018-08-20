@@ -56,7 +56,7 @@ namespace hic
             }
             _logFile.Flush();
             _logFile.Close();
-            Environment.Exit(1);
+            Environment.Exit(0);
         }
 
         private static void SaveDataSetToFile(DataSet ds, string fileName)
