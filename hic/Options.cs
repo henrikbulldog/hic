@@ -89,12 +89,13 @@ namespace hic
                 && UserName != null
                 && Password != null
                 && Criteria.Tagnames != null
-                && Criteria.Start != DateTime.MinValue
-                && Criteria.End != DateTime.MinValue
-                && Criteria.SamplingMode != DataCriteria.SamplingModeType.Undefined
-                && Criteria.CalculationMode != DataCriteria.CalculationModeType.Undefined
-                && Criteria.IntervalMicroseconds != 0;
-            ;
+                && (Criteria.SamplingMode == DataCriteria.SamplingModeType.CurrentValue ||
+                    (Criteria.SamplingMode != DataCriteria.SamplingModeType.Undefined
+                    && Criteria.Start != DateTime.MinValue
+                    && Criteria.End != DateTime.MinValue
+                    && Criteria.CalculationMode != DataCriteria.CalculationModeType.Undefined
+                    && Criteria.IntervalMicroseconds != 0)
+                   );
         }
     }
 }
