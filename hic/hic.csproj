@@ -81,6 +81,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetDir)*.* \\SORBDATDKBAL001\Install\hic /Y</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

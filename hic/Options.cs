@@ -9,7 +9,25 @@ namespace hic
         private string _username;
         private string _password;
 
-        public string ServerName
+				public string TagMask { get; }
+
+				public long IntervalMicroseconds;
+
+				public uint NumberOfSamples;
+
+				public DateTime Start;
+
+				public DateTime End;
+
+				public DataCriteria.SamplingModeType SamplingMode;
+
+				public DataCriteria.CalculationModeType CalculationMode;
+
+				public long MaxMessageSize;
+
+				public string Out = null;
+
+				public string ServerName
         {
             get
             {
@@ -69,32 +87,22 @@ namespace hic
             }
         }
 
-        public string Out = null;
-
-        public DataCriteria Criteria;
-
-        public long MaxMessageSize;
-
-        public Options(object[] tagnames)
+        public Options(string tagMask)
         {
-            Criteria = new DataCriteria(tagnames);
-            Criteria.IntervalMicroseconds = 60000000;
-            Criteria.Start = DateTime.MinValue;
-            Criteria.End = DateTime.MinValue;
+						TagMask = tagMask;
+            IntervalMicroseconds = 0;
+						NumberOfSamples = 1;
         }
 
-        public bool Validate()
+				public bool Validate()
         {
             return ServerName != null
                 && UserName != null
                 && Password != null
-                && Criteria.Tagnames != null
-                && (Criteria.SamplingMode == DataCriteria.SamplingModeType.CurrentValue ||
-                    (Criteria.SamplingMode != DataCriteria.SamplingModeType.Undefined
-                    && Criteria.Start != DateTime.MinValue
-                    && Criteria.End != DateTime.MinValue
-                    && Criteria.CalculationMode != DataCriteria.CalculationModeType.Undefined
-                    && Criteria.IntervalMicroseconds != 0)
+                && TagMask != null
+                && (SamplingMode == DataCriteria.SamplingModeType.CurrentValue ||
+                    (SamplingMode != DataCriteria.SamplingModeType.Undefined
+                    && CalculationMode != DataCriteria.CalculationModeType.Undefined)
                    );
         }
     }
