@@ -35,7 +35,7 @@ namespace hic
             }
             set
             {
-                var env = Environment.GetEnvironmentVariable(value);
+                var env = Environment.GetEnvironmentVariable(value ?? "");
                 if (env != null)
                 {
                     _serverName = env;
@@ -55,7 +55,7 @@ namespace hic
             }
             set
             {
-                var env = Environment.GetEnvironmentVariable(value);
+                var env = Environment.GetEnvironmentVariable(value ?? "");
                 if (env != null)
                 {
                     _username = env;
@@ -75,7 +75,7 @@ namespace hic
             }
             set
             {
-                var env = Environment.GetEnvironmentVariable(value);
+                var env = Environment.GetEnvironmentVariable(value ?? "");
                 if (env != null)
                 {
                     _password = env;
